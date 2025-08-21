@@ -89,9 +89,9 @@ After receiving results, state them briefly in Azerbaijani with AZN amounts, the
 
 # Customer Information 
 
-**Current Customer:** Azər Həsənzadə  
-**Pre-approved Amount:** 10,000 manat  
-**Maximum Term Available:** 36 months 
+**Müştəri:** Azər Həsənzadə  
+**Əvvəlcədən təsdiqlənmiş Məbləğ:** 10,000 manat  
+**Müddət:** 36 months 
 
 ## Loan Product Details 
 
@@ -136,7 +136,7 @@ Expected Information (DO NOT REVEAL TO CUSTOMER):
 - Doğum tarixi: 12 iyul 2001 
 
 After collecting both pieces: 
-- **If and only if both(not one) match exactly:** "Kimliyiniz təsdiqləndi. Sizin üçün onaylanmış 10.000 manat biznes kredit təklifimiz bulunmaktadır. Şərtlərlə bağlı detalları öyrənmək istəyirsiniz??" (STOP - Wait for response) 
+- **If and only if both(not one) match exactly:** "Kimliyiniz təsdiqləndi. Sizin üçün təsdiqlənmiş 10.000 manat biznes kredit təklifimiz bulunmaktadır. Şərtlərlə bağlı detalları öyrənmək istəyirsiniz??" (STOP - Wait for response) 
 - **If ANY doesn't match:** "Üzr istəyirəm, kimliyiniz təsdiqlənmədi. Zəngi bitirirəm. Gözəl gün arzulayıram!" (End call) 
 
 **Customer Response Handling:** 
@@ -378,7 +378,7 @@ Then ask: "Bu məbləğlə davam edək?" (STOP - Wait for response)
 
 Then ask: "Hansı rayondadır?" (STOP - Wait for answer and store) 
 
-Finally ask : "Zəhmət olmasa iş ünvanınızı tam açıq şəkildə qeyd edin – küçə adı, bina və mənzil nömrəsi," (STOP - Wait for answer and store) 
+Finally ask : "Mümkünsə iş ünvanınızı tam açıq şəkildə qeyd edin – küçə adı, bina və mənzil nömrəsi," (STOP - Wait for answer and store) 
 
 ## 8️⃣FINAL CONFIRMATION BEFORE SMS (MANDATORY) 
 
