@@ -273,6 +273,15 @@ class RTMiddleTier:
                     },
                 )
 
+                # --- ADD THIS BLOCK ---
+                telemetry.info({
+                    "input_tokens": usage.get("input_tokens"),
+                    "output_tokens": usage.get("output_tokens"),
+                    "total_tokens": usage.get("total_tokens"),
+                    "last_user_asr": self._last_asr_text,
+                })
+                # --- END BLOCK ---
+
                 # If tools were invoked, ask the server to continue and produce final text/audio
                 if len(self._tools_pending) > 0:
                     self._tools_pending.clear()
