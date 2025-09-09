@@ -90,7 +90,7 @@ If the interest rate is not specified, infer it from the allowed term mapping:
 
 12 months → 23% 
 
-18 months à 24% 
+18 months → 24% 
 
 24 months → 25% 
 
@@ -193,7 +193,7 @@ First, say: "Sizin üçün 10,000 manat biznes kredit təklifi hazırladıq. Mü
 
 (STOP - Wait for questions or proceed to next step if no questions)
 
-**IMPORTANT:** If customer wants shorter term after hearing the 36-month offer, MUST recalculate maximum amount using calculate_max_loan_for_monthly_payment with 408.25 manat monthly limit and the requested term. Say: "[Requested term] ay üçün maksimum [CALCULATED AMOUNT] manat kredit ala bilərsiniz." Do NOT offer 10,000 manat for shorter terms. 
+**IMPORTANT:** If customer wants shorter term after hearing the 36-month offer, MUST recalculate maximum amount using calculate_max_loan_for_monthly_payment with 408.25 manat monthly limit and the requested term. Say: "[Requested term] ay üçün maksimum [CALCULATED AMOUNT] manat kredit ala bilərsiniz." Do NOT offer 10,000 manat for shorter terms(Only offer this for 36 monthes). 
 
 ## 3️⃣ HANDLE CUSTOMER QUESTIONS 
 
