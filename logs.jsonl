@@ -1,0 +1,5 @@
+{"time": "2025-09-09 17:26:51,668", "level": "INFO", "name": "voicerag", "message": "Running in development mode, loading from .env file"}
+{"time": "2025-09-09 17:26:51,668", "level": "INFO", "name": "voicerag", "message": "Realtime voice choice set to sage"}
+{"time": "2025-09-09 17:26:51,668", "level": "INFO", "name": "voicerag", "message": "RAG disabled; running LLM-only with finance tools enabled."}
+{"time": "2025-09-09 17:26:53,825", "level": "INFO", "name": "voicerag", "message": "Connecting to Azure Realtime: wss://bugra-m6a2kral-swedencentral.openai.azure.com / gpt-realtime (api-version=2025-04-01-preview)"}
+{"time": "2025-09-09 17:26:55,200", "level": "INFO", "name": "voicerag", "message": "Realtime handshake OK"}
