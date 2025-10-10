@@ -17,8 +17,11 @@ _ALLOWED_RATES = {
 _MIN_AMOUNT = 1000.0
 _MAX_AMOUNT = 10000.0
 
-def _half_up(x: float) -> float:
-    return float(Decimal(str(x)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+def _round_to_manat(x: float) -> float:
+    """Round to nearest whole manat (no qəpik)."""
+    return float(Decimal(str(x)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
 
 def _resolve_rate(period_months: int, interest_rate: float | None) -> float:
     if interest_rate is None:
@@ -27,25 +30,28 @@ def _resolve_rate(period_months: int, interest_rate: float | None) -> float:
         return _ALLOWED_RATES[period_months]
     return float(interest_rate)
 
+
 def _calc_monthly_payment(amount: float, annual_rate: float, period_months: int) -> float:
     if period_months <= 0:
         raise ValueError("period_months must be > 0")
     monthly_rate = (annual_rate / 100.0) / 12.0
     if monthly_rate == 0.0:
-        return _half_up(amount / period_months)
+        return _round_to_manat(amount / period_months)
     factor = (1.0 + monthly_rate) ** period_months
     payment = amount * factor * monthly_rate / (factor - 1.0)
-    return _half_up(payment)
+    return _round_to_manat(payment)
+
 
 def _calc_total_debt(amount: float, annual_rate: float, period_months: int) -> float:
     monthly_rate = (annual_rate / 100.0) / 12.0
     if period_months <= 0:
         raise ValueError("period_months must be > 0")
     if monthly_rate == 0.0:
-        return _half_up(amount)
+        return _round_to_manat(amount)
     factor = (1.0 + monthly_rate) ** (-period_months)
     total = (amount * monthly_rate / (1.0 - factor)) * period_months
-    return _half_up(total)
+    return _round_to_manat(total)
+
 
 def _calc_principal_from_monthly(monthly_limit: float, annual_rate: float, period_months: int) -> float:
     """Invert the annuity formula to get max principal for a monthly budget."""
@@ -54,10 +60,11 @@ def _calc_principal_from_monthly(monthly_limit: float, annual_rate: float, perio
     monthly_rate = (annual_rate / 100.0) / 12.0
     if monthly_rate == 0.0:
         principal = monthly_limit * period_months
-        return _half_up(principal)
+        return _round_to_manat(principal)
     factor = (1.0 + monthly_rate) ** period_months
     principal = monthly_limit * (factor - 1.0) / (monthly_rate * factor)
-    return _half_up(principal)
+    return _round_to_manat(principal)
+
 
 # ---- Tool Schemas ----
 _monthly_schema: Dict[str, Any] = {
@@ -143,6 +150,7 @@ _maxloan_schema: Dict[str, Any] = {
     }
 }
 
+
 # ---- Tool Handlers ----
 async def _monthly_handler(args: Any) -> ToolResult:
     amount = float(args["amount"])
@@ -152,14 +160,15 @@ async def _monthly_handler(args: Any) -> ToolResult:
 
     return ToolResult(
         {
-            "amount": amount,
+            "amount": int(_round_to_manat(amount)),
             "period_months": period,
             "interest_rate": rate,
-            "monthly_payment": monthly,
+            "monthly_payment": int(monthly),
             "currency": "AZN"
         },
         ToolResultDirection.TO_SERVER
     )
+
 
 async def _total_handler(args: Any) -> ToolResult:
     amount = float(args["amount"])
@@ -169,14 +178,15 @@ async def _total_handler(args: Any) -> ToolResult:
 
     return ToolResult(
         {
-            "amount": amount,
+            "amount": int(_round_to_manat(amount)),
             "period_months": period,
             "interest_rate": rate,
-            "total_debt": total,
+            "total_debt": int(total),
             "currency": "AZN"
         },
         ToolResultDirection.TO_SERVER
     )
+
 
 async def _maxloan_handler(args: Any) -> ToolResult:
     monthly_limit = float(args["monthly_limit"])
@@ -185,14 +195,13 @@ async def _maxloan_handler(args: Any) -> ToolResult:
 
     results: List[Dict[str, Any]] = []
 
-    def _cap_amount(x: float) -> tuple[float, bool]:
+    def _cap_amount(x: float) -> tuple[int, bool]:
         capped = False
         v = x
         if v > _MAX_AMOUNT:
             v = _MAX_AMOUNT
             capped = True
-        # we don’t force a minimum here; if < 1000, let the model say it’s below the bank’s minimum
-        return (_half_up(v), capped)
+        return (int(_round_to_manat(v)), capped)
 
     if period_opt is not None:
         p = int(period_opt)
@@ -221,8 +230,9 @@ async def _maxloan_handler(args: Any) -> ToolResult:
 
     return ToolResult({"results": results}, ToolResultDirection.TO_SERVER)
 
+
 # ---- Attach for app.py ----
 def attach_finance_tools(rtmt: RTMiddleTier) -> None:
     rtmt.tools["calculate_monthly_payment"] = Tool(schema=_monthly_schema, target=_monthly_handler)
-    rtmt.tools["calculate_total_debt"]      = Tool(schema=_total_schema,   target=_total_handler)
+    rtmt.tools["calculate_total_debt"] = Tool(schema=_total_schema, target=_total_handler)
     rtmt.tools["calculate_max_loan_for_monthly_payment"] = Tool(schema=_maxloan_schema, target=_maxloan_handler)
